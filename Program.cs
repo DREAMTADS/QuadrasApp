@@ -31,7 +31,7 @@ namespace QuadrasApp
             if (res == "S" || res == "s") arquibancada = 1; else arquibancada = 0;
 
             string sql = "INSERT INTO QUADRAS (NOME, TIPO, COBERTA, BANCOS, ARQUIBANCADA, BLOQUEADA, EM_USO) "
-            + "VALUES ('" + nome + "', '" + tipo + "', '" + coberta + "', '" + bancos + "', '" + arquibancada + "', 0, 0 )";
+            + "VALUES ('" + nome + "', '" + tipo + "', '" + coberta + "', '" + bancos + "', '" + arquibancada + "', 1, 1 )";
 
             SqlConnection con = new SqlConnection(conString);
             SqlCommand cmd = new SqlCommand(sql, con);
@@ -93,25 +93,58 @@ namespace QuadrasApp
                 con.Close();
             }
         }
+
+        enum Menu 
+        { 
+            Sair = 0,
+            Cadastrar = 1,
+            Visualizar = 2
+        };
+
         static void Main(string[] args)
         {
-            string conString = @"Data Source=DESKTOP-5F7JSHI\SQLEXPRESS;Initial Catalog=BDQUADRAS;Integrated Security=True";
+            string conString = @"Data Source=DESKTOP-D1D6V76\SQLEXPRESS;Initial Catalog=BDQUADRAS;Integrated Security=True";
 
             SqlConnection con = new SqlConnection(conString);
             con.Open();
             if (con.State == System.Data.ConnectionState.Open)
             {
-                Console.WriteLine("Bem Vindo!"); 
-                Console.WriteLine("Oque deseja fazer?");
-                Console.WriteLine("1- Cadastrar Quadra");
-                Console.WriteLine("2- Visualizar Quadra");
-                Console.WriteLine("");
-                string escolha = Console.ReadLine();
-                if (Convert.ToInt32(escolha) == 1)
-                    Program.CadastrarQuadra(conString);
-                else if (Convert.ToInt32(escolha) == 2)
-                    Program.VisualizarQuadras(conString);
-                
+                bool saida = false;
+                while(saida == false)
+                {
+                    Console.WriteLine("Bem Vindo!");
+                    Console.WriteLine("O que deseja fazer?\n");
+                    Console.WriteLine("1 - Cadastrar Quadra;");
+                    Console.WriteLine("2 - Visualizar Quadra;");
+                    
+                    Console.WriteLine("0- Sair.");
+
+                    string escolhaStr = Console.ReadLine();
+                    int escolhaInt = int.Parse(escolhaStr);
+
+                    if (escolhaInt >= 0 && escolhaInt < 8)
+                    {
+                        Menu escolha = (Menu)escolhaInt;
+
+                        switch (escolha)
+                        {
+                            case Menu.Sair:
+                                saida = true;
+                                break;
+                            case Menu.Cadastrar:
+                                Program.CadastrarQuadra(conString);
+                                break;
+                            case Menu.Visualizar:
+                                Program.VisualizarQuadras(conString);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        saida = true;
+                    }
+                    Console.Clear();   
+                }
             }
         }
     }
