@@ -42,10 +42,12 @@ namespace QuadrasApp
                 int i = cmd.ExecuteNonQuery();
                 if (i > 0)
                     Console.WriteLine("Quadra Cadastrada com sucesso");
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine("Erro: " + ex.Message);
-            } finally
+            }
+            finally
             {
                 con.Close();
             }
@@ -75,11 +77,11 @@ namespace QuadrasApp
                     bool data7 = reader.GetBoolean(7);
                     Console.WriteLine(data1);
                     Console.WriteLine(data2);
-                    Console.WriteLine(data3 == true ? "É Coberta" : "Nao é coberta" );
-                    Console.WriteLine(data4 == true ? "Tem bancos" : "Nao tem bancos" );
-                    Console.WriteLine(data5 == true ? "Tem arquibancada" : "Nao tem arquibancada" );
-                    Console.WriteLine(data6 == true ? "Liberada" : "Bloqueada" );
-                    Console.WriteLine(data7 == true ? "Disponivel" : "Em Uso" );
+                    Console.WriteLine(data3 == true ? "É Coberta" : "Nao é coberta");
+                    Console.WriteLine(data4 == true ? "Tem bancos" : "Nao tem bancos");
+                    Console.WriteLine(data5 == true ? "Tem arquibancada" : "Nao tem arquibancada");
+                    Console.WriteLine(data6 == true ? "Liberada" : "Bloqueada");
+                    Console.WriteLine(data7 == true ? "Disponivel" : "Em Uso");
                     Console.WriteLine("-------------#-------------");
 
                 }
