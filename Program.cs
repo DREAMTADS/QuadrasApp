@@ -21,7 +21,6 @@ namespace QuadrasApp
             res = Console.ReadLine();
             if (res == "S" || res == "s") coberta = 1; else coberta = 0;
 
-            Console.WriteLine(coberta);
             Console.WriteLine("A quadra tem bancos? (S/N)");
             res = Console.ReadLine();
             if (res == "S" || res == "s") bancos = 1; else bancos = 0;
@@ -135,9 +134,11 @@ namespace QuadrasApp
                                 break;
                             case Menu.Cadastrar:
                                 Program.CadastrarQuadra(conString);
+                                Console.ReadLine();
                                 break;
                             case Menu.Visualizar:
                                 Program.VisualizarQuadras(conString);
+                                Console.ReadLine();
                                 break;
                         }
                     }
