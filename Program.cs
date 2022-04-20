@@ -137,10 +137,10 @@ namespace QuadrasApp
             Console.WriteLine("Digite o ID da quadra:");
             string idQuad = Console.ReadLine();
 
-            Console.WriteLine("Digite a data e hora de inicio:");
+            Console.WriteLine("Digite a hora de inicio:");
             string dateInicio = Console.ReadLine();
 
-            Console.WriteLine("Digite a data e hora de termino:");
+            Console.WriteLine("Digite a hora de termino:");
             string dateTermino = Console.ReadLine();
 
             Console.WriteLine("Digite o nome do cliente:");
@@ -149,14 +149,14 @@ namespace QuadrasApp
             Console.WriteLine("Digite o CPF do cliente:");
             string cpf = Console.ReadLine();
 
-            Console.WriteLine("A reserva vai ser paga agora por PIX?");
+            Console.WriteLine("A reserva vai ser paga agora por PIX? (S/N)");
             res = Console.ReadLine();
             if (res == "S" || res == "s") pago = 1; else pago = 0;
 
             Console.WriteLine("");
 
-            sql = "INSERT INTO RESERVAS (DATA_INICIO, DATA_TERMINO, NOME_CLIENTE, CPF, PAGO, ID_QUADRA) "
-            + "VALUES ('" + dateInicio + "', '" + dateTermino + "', '" + nomeCliente + "', '" + cpf + "', '" + pago + "', " + idQuad + ")";
+            sql = "INSERT INTO RESERVAS (NOME_CLIENTE, CPF, PAGO, ID_QUADRA) "
+            + "VALUES ('" + nomeCliente + "', '" + cpf + "', '" + pago + "', " + idQuad + ")";
 
             cmd = new SqlCommand(sql, con);
             cmd.CommandType = CommandType.Text;
@@ -164,8 +164,29 @@ namespace QuadrasApp
             try
             {
                 int i = cmd.ExecuteNonQuery();
-                if (i > 0)
-                    Console.WriteLine("Reserva gerada com sucesso");
+                if (i > 0) {
+                    sql = "INSERT INTO HORARIOS (HORA_INICIO, HORA_TERMINO, ID_QUADRA) "
+                    + "VALUES ('" + dateInicio + "', '" + dateTermino + "', " + idQuad + ")";
+
+                    cmd = new SqlCommand(sql, con);
+                    cmd.CommandType = CommandType.Text;
+                    
+                    try
+                    {
+
+                        i = cmd.ExecuteNonQuery();
+                        if (i > 0)
+                        {
+                            Console.WriteLine("Reserva gerada com sucesso");
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Erro: " + ex.Message);
+                    }
+                }
+               
             }
             catch (Exception ex)
             {
@@ -194,17 +215,78 @@ namespace QuadrasApp
                 {
                     string data1 = reader.GetString(1);
                     string data2 = reader.GetString(2);
-                    string data3 = reader.GetString(3);
-                    string data4 = reader.GetString(4);
-                    bool data5 = reader.GetBoolean(5);
-                    int data6 = reader.GetInt32(6);
+                    bool data3 = reader.GetBoolean(3);
+                    int data4 = reader.GetInt32(4);
                     Console.WriteLine();
                     Console.WriteLine(data1);
                     Console.WriteLine(data2);
-                    Console.WriteLine(data3);
+                    Console.WriteLine(data3 == true ? "Foi pago antecipadamente" : "Nao foi pago antecipadamente");
                     Console.WriteLine(data4);
-                    Console.WriteLine(data5 == true ? "Foi pago antecipadamente" : "Nao foi pago antecipadamente");
-                    Console.WriteLine(data6);
+                    Console.WriteLine("-------------#-------------");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erro: " + ex.Message);
+            }
+            finally
+            {
+                con.Close();
+            }
+        }    
+      public static void VerificarHorarios(string conString)
+        {
+            Console.Clear();
+            Console.WriteLine("\nVerificar horário das quadras");
+            string sql = "SELECT * FROM QUADRAS";
+
+            SqlConnection con = new SqlConnection(conString);
+            SqlCommand cmd = new SqlCommand(sql, con);
+            cmd.CommandType = CommandType.Text;
+            SqlDataReader reader;
+            con.Open();
+
+            try
+            {
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    int data0 = reader.GetInt32(0);
+                    string data1 = reader.GetString(1);
+                    Console.WriteLine();
+                    Console.WriteLine("Quadra nº " + data0 + ": " + data1);
+                    Console.WriteLine("-------------#-------------");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erro: " + ex.Message);
+            }
+
+            Console.WriteLine("Digite o ID da quadra:");
+            string idQuad = Console.ReadLine();
+
+            sql = "SELECT * FROM HORARIOS WHERE ID_QUADRA = " + idQuad;
+
+            con = new SqlConnection(conString);
+            cmd = new SqlCommand(sql, con);
+            cmd.CommandType = CommandType.Text;
+            con.Open();
+
+            try
+            {
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    int data1 = reader.GetInt32(1);
+                    int data2 = reader.GetInt32(2);
+                    int data3 = reader.GetInt32(3);
+                    Console.WriteLine();
+                    Console.WriteLine("Quadra ID: " + data3);
+                    Console.WriteLine("Horário de entrada: " + data1);
+                    Console.WriteLine("Horário de saída: " + data2);
                     Console.WriteLine("-------------#-------------");
 
                 }
@@ -226,11 +308,12 @@ namespace QuadrasApp
             VisualizarQuadra = 2,
             CriarReserva = 3,
             VisualizarReservas = 4,
+            VerificarHorarios= 5
         };
 
         static void Main(string[] args)
         {
-            string conString = @"Data Source=DESKTOP-D1D6V76\SQLEXPRESS;Initial Catalog=BDQUADRAS;Integrated Security=True";
+            string conString = @"Data Source=DESKTOP-A26DHLV;Initial Catalog=BDQUADRAS;Integrated Security=True";
 
             SqlConnection con = new SqlConnection(conString);
             con.Open();
@@ -245,6 +328,8 @@ namespace QuadrasApp
                     Console.WriteLine("2 - Visualizar Quadra;");
                     Console.WriteLine("3 - Reservar Quadra;");
                     Console.WriteLine("4 - Visualizar Reservas");
+                    Console.WriteLine("5 - Verificar Horários");
+
                     
                     Console.WriteLine("0- Sair.");
 
@@ -274,6 +359,10 @@ namespace QuadrasApp
                                 break;
                             case Menu.VisualizarReservas:
                                 Program.VisualizarReserva(conString);
+                                Console.ReadLine();
+                                break;
+                            case Menu.VerificarHorarios:
+                                Program.VerificarHorarios(conString);
                                 Console.ReadLine();
                                 break;
                         }
